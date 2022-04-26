@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["David Taralla <davidtaralla@gmail.com> & Contributors to the Rrise project"]
 description = "A Wwise Bevy integration"
 repository = "https://github.com/dtaralla/bevy-rrise"
+documentation = "https://dtaralla.github.io/bevy-rrise/"
 readme = "README.md"
 keywords = ["library", "sound", "3D", "wwise"]
 categories = ["multimedia", "game-development"]

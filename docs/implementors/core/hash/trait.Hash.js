@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["bevy_rrise"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"enum\" href=\"bevy_rrise/plugin/enum.RriseLabel.html\" title=\"enum bevy_rrise::plugin::RriseLabel\">RriseLabel</a>","synthetic":false,"types":["bevy_rrise::plugin::RriseLabel"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
