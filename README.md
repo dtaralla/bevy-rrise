@@ -25,7 +25,6 @@ Just add the plugin settings as resources to your Bevy app, then add the plugin 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(EasingsPlugin)
         // Use Rrise with default settings 
         .add_plugin(RrisePlugin)
         .add_startup_system(setup_scene)
