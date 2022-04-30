@@ -53,7 +53,7 @@ fn update(
     drone: Query<(&Children, &EasingComponent<Transform>, &GlobalTransform)>,
     mut camera: Query<&mut Transform, With<Camera3d>>,
 ) -> Result<(), AkResult> {
-    let rtpc = SetRtpcValue::new("Doppler", 0.0);
+    let mut rtpc = SetRtpcValue::new("Doppler", 0.0);
 
     let (children, easing, tfm) = drone.single();
 
@@ -68,10 +68,10 @@ fn update(
                 - easing.direction() as f32 * TRAJECTORY_SPEED * -tfm.translation.x.signum())
     };
 
+    rtpc.with_value(doppler_factor);
+
     for c in children.iter() {
-        rtpc.for_target(c.id() as AkGameObjectID)
-            .with_value(doppler_factor)
-            .set()?;
+        rtpc.for_target(c.id() as AkGameObjectID).set()?;
     }
 
     // Make camera look at emitter
