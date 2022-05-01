@@ -33,7 +33,7 @@ pub struct RrEmitter {
     /// Defaults to no event (ie, `""`).
     ///
     /// See [`auto_post`](RrEmitter::auto_post)
-    pub event_id: String,
+    pub event_id: AkID<'static>,
 
     /// Mask describing which callbacks you want to subscribe to.
     /// Defaults to none (ie, `AkCallbackType(0)`).
@@ -138,7 +138,7 @@ impl Default for RrEmitter {
     /// Defaults to no event nor auto post, no callback flags, no despawn on silent.
     fn default() -> Self {
         Self {
-            event_id: "".to_string(),
+            event_id: AkID::Name(""),
             flags: AkCallbackType::default(),
             auto_post: false,
             despawn_on_silent: false,
@@ -168,7 +168,7 @@ impl RrEmitterBundle {
     ///
     /// If `despawn_on_silent` is `true`, despawn this emitter once it has finished playing all its
     /// events.
-    pub fn with_event<T: Into<String>>(mut self, event: T, despawn_on_silent: bool) -> Self {
+    pub fn with_event<T: Into<AkID<'static>>>(mut self, event: T, despawn_on_silent: bool) -> Self {
         self.rr.event_id = event.into();
         self.rr.auto_post = true;
         self.rr.despawn_on_silent = despawn_on_silent;
@@ -218,7 +218,7 @@ impl RrDynamicEmitterBundle {
     }
 
     /// Sets the event to associate to this emitter and registers it for auto play.
-    pub fn with_event<T: Into<String>>(mut self, event: T, despawn_on_silent: bool) -> Self {
+    pub fn with_event<T: Into<AkID<'static>>>(mut self, event: T, despawn_on_silent: bool) -> Self {
         self.emitter.rr.event_id = event.into();
         self.emitter.rr.auto_post = true;
         self.emitter.rr.despawn_on_silent = despawn_on_silent;
@@ -315,8 +315,7 @@ impl RrEmitter {
     ///
     /// See [`CallbackChannel`]
     pub fn post_associated_event(&mut self, cb_channel: Option<CallbackChannel>) -> AkPlayingID {
-        // FIXME I don't like this clone copy of event_id, borrow checker...
-        self.post_event(self.event_id.clone().as_str(), self.flags, cb_channel)
+        self.post_event(self.event_id, self.flags, cb_channel)
     }
 
     /// Posts `event` using `flags` (**this method ignores `self.flags`**).
@@ -325,7 +324,7 @@ impl RrEmitter {
     /// in your [`EventReader`]s, even if you had some `flags`.
     ///
     /// See [`CallbackChannel`]
-    pub fn post_event<'a, T: Into<AkID<'a>>>(
+    pub fn post_event<'b, T: Into<AkID<'b>>>(
         &mut self,
         event: T,
         flags: AkCallbackType,
