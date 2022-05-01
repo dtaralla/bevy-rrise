@@ -2,7 +2,7 @@
  * Copyright (c) 2022 Contributors to the bevy-rrise project
  */
 
-#![doc = include_str!("../README.MD")]
+#![doc = include_str!("../README.md")]
 
 use bevy::prelude::*;
 use rrise::{AkCallbackInfo, AkTransform};
