@@ -28,6 +28,10 @@ features = ["attributes"]
 version = "0.7"
 optional = true
 
+[dependencies.rrise-headers]
+version = "0.2"
+optional = true
+
 [target.'cfg(windows)'.dependencies]
 raw-window-handle = "0.4"
 
@@ -47,7 +51,7 @@ features = ["x11"]
 
 [[example]]
 name = "music_visualizer"
-required-features = ["bevy/render", "rrise/AkParametricEQFX"]
+required-features = ["bevy/render", "rrise-headers", "rrise/AkParametricEQFX"]
 
 [[example]]
 name = "doppler_drone"

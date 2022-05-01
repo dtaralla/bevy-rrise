@@ -10,7 +10,8 @@ use bevy_rrise::{rrise_setting, AkCallbackEvent};
 use rrise::query_params::{get_rtpc_value, RtpcValueType};
 use rrise::settings::AkInitSettings;
 use rrise::sound_engine::load_bank_by_name;
-use rrise::{AkCallbackInfo, AkCallbackType, AkResult, AkRtpcValue};
+use rrise::{AkAuxBusID, AkCallbackInfo, AkCallbackType, AkResult, AkRtpcValue};
+use rrise_headers::rr;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 
@@ -30,17 +31,17 @@ fn main() {
         .add_plugin(RrisePlugin)
         .insert_resource(Meters {
             meters: [
-                (String::from("Meters_00"), 0.),
-                (String::from("Meters_01"), 0.),
-                (String::from("Meters_02"), 0.),
-                (String::from("Meters_03"), 0.),
-                (String::from("Meters_04"), 0.),
-                (String::from("Meters_05"), 0.),
-                (String::from("Meters_06"), 0.),
-                (String::from("Meters_07"), 0.),
-                (String::from("Meters_08"), 0.),
-                (String::from("Meters_09"), 0.),
-                (String::from("Meters_10"), 0.),
+                (rr::xbus::Meters_00, 0.),
+                (rr::xbus::Meters_01, 0.),
+                (rr::xbus::Meters_02, 0.),
+                (rr::xbus::Meters_03, 0.),
+                (rr::xbus::Meters_04, 0.),
+                (rr::xbus::Meters_05, 0.),
+                (rr::xbus::Meters_06, 0.),
+                (rr::xbus::Meters_07, 0.),
+                (rr::xbus::Meters_08, 0.),
+                (rr::xbus::Meters_09, 0.),
+                (rr::xbus::Meters_10, 0.),
             ],
         })
         .add_startup_system(setup_scene)
@@ -68,14 +69,14 @@ struct BandMeter(usize);
 #[derive(Component)]
 struct BeatBarText;
 
-type Meter = (String, AkRtpcValue);
+type Meter = (AkAuxBusID, AkRtpcValue);
 struct Meters {
     meters: [Meter; 11],
 }
 
 fn audio_metering(mut meters: ResMut<Meters>) -> Result<(), AkResult> {
     for meter in &mut meters.meters {
-        let rtpc_value = get_rtpc_value(meter.0.as_str(), None, None, RtpcValueType::Global(0.))?;
+        let rtpc_value = get_rtpc_value(meter.0, None, None, RtpcValueType::Global(0.))?;
         meter.1 = match rtpc_value {
             RtpcValueType::Global(v) => v,
             _ => 0.,
@@ -116,12 +117,12 @@ fn update_beat_bar_times(
 // Start music by spawning a static sound emitter
 #[tracing::instrument(level = "debug", skip_all)]
 fn start_music(cb_channel: Res<CallbackChannel>) -> Result<(), AkResult> {
-    if let Err(akr) = load_bank_by_name("TheBank.bnk") {
+    if let Err(akr) = load_bank_by_name(rr::bnk::TheBank) {
         error!("Couldn't load TheBank: {}", akr);
         return Err(akr);
     }
 
-    PostEventAtLocation::new("PlayMeteredMusic", Transform::default())
+    PostEventAtLocation::new(rr::ev::PlayMeteredMusic, Transform::default())
         .flags(AkCallbackType::AK_MusicSyncBeat | AkCallbackType::AK_MusicSyncBar)
         .post(Some(cb_channel.clone()))?;
 
