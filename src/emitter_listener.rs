@@ -82,6 +82,19 @@ pub struct RrListener {
     pub(crate) entity: Option<Entity>,
 }
 
+impl RrListener {
+    pub fn new(is_default: bool) -> Self {
+        Self {
+            is_default,
+            ..default()
+        }
+    }
+
+    pub fn is_default(&self) -> bool {
+        self.is_default
+    }
+}
+
 impl Default for RrListener {
     fn default() -> Self {
         Self {
@@ -418,9 +431,11 @@ pub(crate) fn init_new_rr_objects(
             continue;
         }
 
-        if let Err(akr) = add_default_listener(id) {
-            error!("Couldn't add default listener {:?} - {}", e, akr);
-            continue;
+        if rr_l.is_default {
+            if let Err(akr) = add_default_listener(id) {
+                error!("Couldn't add default listener {:?} - {}", e, akr);
+                continue;
+            }
         }
 
         if let Err(akr) = set_position(id, tfm.to_ak_transform()) {
@@ -503,7 +518,7 @@ pub(crate) fn despawn_silent_emitters(
 }
 
 #[allow(clippy::type_complexity)]
-pub(crate) fn update_emitters_position(
+pub(crate) fn update_rr_position(
     mut emitters: Query<
         (&mut RrEmitter, &GlobalTransform),
         (With<RrRegistered>, Changed<GlobalTransform>),

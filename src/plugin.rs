@@ -3,8 +3,8 @@
  */
 
 use crate::emitter_listener::{
-    despawn_silent_emitters, init_new_rr_objects, stop_destroyed_emitters,
-    update_emitters_position, RrListenerBundle,
+    despawn_silent_emitters, init_new_rr_objects, stop_destroyed_emitters, update_rr_position,
+    RrListenerBundle,
 };
 use crate::AkCallbackEvent;
 use bevy::app::AppExit;
@@ -12,7 +12,6 @@ use bevy::asset::{AssetServerSettings, FileAssetIo};
 use bevy::prelude::*;
 use crossbeam_channel::{Receiver, Sender};
 use rrise::settings::*;
-use rrise::AkResult::AK_Fail;
 use rrise::*;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
@@ -173,7 +172,7 @@ impl Plugin for RrisePlugin {
             )
             .add_system_to_stage(
                 CoreStage::PostUpdate,
-                update_emitters_position
+                update_rr_position
                     .chain(error_handler)
                     .after("Rrise_despawn_silent_emitters"), // No need to stop silent emitters despawned this frame,
             )
@@ -322,7 +321,7 @@ fn init_sound_engine(
 
     if !sound_engine::is_initialized() {
         error!("Unknown error: the sound engine didn't initialize properly");
-        Err(AK_Fail)
+        Err(AkResult::AK_Fail)
     } else {
         Ok(())
     }
