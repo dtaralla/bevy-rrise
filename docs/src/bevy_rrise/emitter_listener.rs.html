@@ -534,6 +534,20 @@
 <span id="529">529</span>
 <span id="530">530</span>
 <span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright (c) 2022 Contributors to the bevy-rrise project
  */</span>
@@ -569,7 +583,7 @@
     <span class="doccomment">/// Defaults to no event (ie, `&quot;&quot;`).</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [`auto_post`](RrEmitter::auto_post)</span>
-    <span class="kw">pub</span> <span class="ident">event_id</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">event_id</span>: <span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Mask describing which callbacks you want to subscribe to.</span>
     <span class="doccomment">/// Defaults to none (ie, `AkCallbackType(0)`).</span>
@@ -616,6 +630,19 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RrListener</span> {
     <span class="ident">is_default</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">entity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Entity</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">RrListener</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">is_default</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">is_default</span>,
+            ..<span class="ident">default</span>()
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_default</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">is_default</span>
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">RrListener</span> {
@@ -674,7 +701,7 @@
     <span class="doccomment">/// Defaults to no event nor auto post, no callback flags, no despawn on silent.</span>
     <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">event_id</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
+            <span class="ident">event_id</span>: <span class="ident">AkID::Name</span>(<span class="string">&quot;&quot;</span>),
             <span class="ident">flags</span>: <span class="ident">AkCallbackType::default</span>(),
             <span class="ident">auto_post</span>: <span class="bool-val">false</span>,
             <span class="ident">despawn_on_silent</span>: <span class="bool-val">false</span>,
@@ -704,7 +731,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If `despawn_on_silent` is `true`, despawn this emitter once it has finished playing all its</span>
     <span class="doccomment">/// events.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">event</span>: <span class="ident">T</span>, <span class="ident">despawn_on_silent</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">event</span>: <span class="ident">T</span>, <span class="ident">despawn_on_silent</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">rr</span>.<span class="ident">event_id</span> <span class="op">=</span> <span class="ident">event</span>.<span class="ident">into</span>();
         <span class="self">self</span>.<span class="ident">rr</span>.<span class="ident">auto_post</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="self">self</span>.<span class="ident">rr</span>.<span class="ident">despawn_on_silent</span> <span class="op">=</span> <span class="ident">despawn_on_silent</span>;
@@ -754,7 +781,7 @@
     }
 
     <span class="doccomment">/// Sets the event to associate to this emitter and registers it for auto play.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">event</span>: <span class="ident">T</span>, <span class="ident">despawn_on_silent</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">event</span>: <span class="ident">T</span>, <span class="ident">despawn_on_silent</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">emitter</span>.<span class="ident">rr</span>.<span class="ident">event_id</span> <span class="op">=</span> <span class="ident">event</span>.<span class="ident">into</span>();
         <span class="self">self</span>.<span class="ident">emitter</span>.<span class="ident">rr</span>.<span class="ident">auto_post</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="self">self</span>.<span class="ident">emitter</span>.<span class="ident">rr</span>.<span class="ident">despawn_on_silent</span> <span class="op">=</span> <span class="ident">despawn_on_silent</span>;
@@ -851,8 +878,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [`CallbackChannel`]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post_associated_event</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">cb_channel</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CallbackChannel</span><span class="op">&gt;</span>) -&gt; <span class="ident">AkPlayingID</span> {
-        <span class="comment">// FIXME I don&#39;t like this clone copy of event_id, borrow checker...</span>
-        <span class="self">self</span>.<span class="ident">post_event</span>(<span class="self">self</span>.<span class="ident">event_id</span>.<span class="ident">clone</span>().<span class="ident">as_str</span>(), <span class="self">self</span>.<span class="ident">flags</span>, <span class="ident">cb_channel</span>)
+        <span class="self">self</span>.<span class="ident">post_event</span>(<span class="self">self</span>.<span class="ident">event_id</span>, <span class="self">self</span>.<span class="ident">flags</span>, <span class="ident">cb_channel</span>)
     }
 
     <span class="doccomment">/// Posts `event` using `flags` (**this method ignores `self.flags`**).</span>
@@ -861,7 +887,7 @@
     <span class="doccomment">/// in your [`EventReader`]s, even if you had some `flags`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [`CallbackChannel`]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post_event</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post_event</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
         <span class="ident">event</span>: <span class="ident">T</span>,
         <span class="ident">flags</span>: <span class="ident">AkCallbackType</span>,
@@ -955,9 +981,11 @@
             <span class="kw">continue</span>;
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">akr</span>) <span class="op">=</span> <span class="ident">add_default_listener</span>(<span class="ident">id</span>) {
-            <span class="macro">error!</span>(<span class="string">&quot;Couldn&#39;t add default listener {:?} - {}&quot;</span>, <span class="ident">e</span>, <span class="ident">akr</span>);
-            <span class="kw">continue</span>;
+        <span class="kw">if</span> <span class="ident">rr_l</span>.<span class="ident">is_default</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">akr</span>) <span class="op">=</span> <span class="ident">add_default_listener</span>(<span class="ident">id</span>) {
+                <span class="macro">error!</span>(<span class="string">&quot;Couldn&#39;t add default listener {:?} - {}&quot;</span>, <span class="ident">e</span>, <span class="ident">akr</span>);
+                <span class="kw">continue</span>;
+            }
         }
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">akr</span>) <span class="op">=</span> <span class="ident">set_position</span>(<span class="ident">id</span>, <span class="ident">tfm</span>.<span class="ident">to_ak_transform</span>()) {
@@ -1040,7 +1068,7 @@
 }
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::type_complexity</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">update_emitters_position</span>(
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">update_rr_position</span>(
     <span class="kw-2">mut</span> <span class="ident">emitters</span>: <span class="ident">Query</span><span class="op">&lt;</span>
         (<span class="kw-2">&amp;mut</span> <span class="ident">RrEmitter</span>, <span class="kw-2">&amp;</span><span class="ident">GlobalTransform</span>),
         (<span class="ident">With</span><span class="op">&lt;</span><span class="ident">RrRegistered</span><span class="op">&gt;</span>, <span class="ident">Changed</span><span class="op">&lt;</span><span class="ident">GlobalTransform</span><span class="op">&gt;</span>),
