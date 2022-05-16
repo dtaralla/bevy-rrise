@@ -29,11 +29,17 @@ macro_rules! ak_transform_impls {
                 fn to_ak_transform(&self) -> AkTransform {
                     let mut pos = self.translation.to_array();
                     pos[2] = -pos[2];
+
                     let mut ak_tfm = AkTransform::from_position(pos);
+
                     let mut front = self.forward().to_array();
                     front[2] = -front[2];
                     ak_tfm.orientationFront = front.into();
-                    ak_tfm.orientationTop = self.up().to_array().into();
+
+                    let mut up = self.up().to_array();
+                    up[2] = -up[2];
+                    ak_tfm.orientationTop = up.into();
+
                     ak_tfm
                 }
             }
