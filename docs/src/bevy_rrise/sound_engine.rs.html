@@ -1,9 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\sound_engine.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sound_engine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../bevy_rrise/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\sound_engine.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>sound_engine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../bevy_rrise/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -108,107 +103,106 @@
 <span id="103">103</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright (c) 2022 Contributors to the bevy-rrise project
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident">bevy::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">rrise::sound_engine</span>::{
-    <span class="ident">register_game_obj</span>, <span class="ident">set_position</span>, <span class="ident">unregister_game_obj</span>, <span class="ident">PostEvent</span> <span class="kw">as</span> <span class="ident">RPostEvent</span>,
+</span><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>rrise::sound_engine::{
+    register_game_obj, set_position, unregister_game_obj, PostEvent <span class="kw">as </span>RPostEvent,
 };
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::CallbackChannel</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ToAkTransform</span>;
-<span class="kw">use</span> <span class="ident">rrise::AkTransform</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rrise</span>::{<span class="ident">AkCallbackInfo</span>, <span class="ident">AkCallbackType</span>, <span class="ident">AkGameObjectID</span>, <span class="ident">AkID</span>, <span class="ident">AkPlayingID</span>, <span class="ident">AkResult</span>};
-<span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>};
+<span class="kw">use </span><span class="kw">crate</span>::plugin::CallbackChannel;
+<span class="kw">use </span><span class="kw">crate</span>::ToAkTransform;
+<span class="kw">use </span>rrise::AkTransform;
+<span class="kw">pub use </span>rrise::{AkCallbackInfo, AkCallbackType, AkGameObjectID, AkID, AkPlayingID, AkResult};
+<span class="kw">use </span>tracing::{debug, error};
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SoundEngine</span> {}
+<span class="kw">pub struct </span>SoundEngine {}
 
-<span class="doccomment">/// Helper struct to post events in a fire &amp; forget fashion</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PostEventAtLocation</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">inner</span>: <span class="ident">RPostEvent</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    <span class="ident">has_flags</span>: <span class="ident">bool</span>,
-    <span class="ident">tmp_id</span>: <span class="ident">AkGameObjectID</span>,
-    <span class="ident">at</span>: <span class="ident">AkTransform</span>,
+<span class="doccomment">/// Helper struct to post events in a fire &amp; forget fashion
+</span><span class="kw">pub struct </span>PostEventAtLocation&lt;<span class="lifetime">&#39;a</span>&gt; {
+    inner: RPostEvent&lt;<span class="lifetime">&#39;a</span>&gt;,
+    has_flags: bool,
+    tmp_id: AkGameObjectID,
+    at: AkTransform,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PostEventAtLocation</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Selects an event by name or by ID, to play at a given location</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">AkID</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">U</span>: <span class="ident">ToAkTransform</span><span class="op">&gt;</span>(<span class="ident">event_id</span>: <span class="ident">T</span>, <span class="ident">at</span>: <span class="ident">U</span>) -&gt; <span class="self">Self</span> {
-        <span class="comment">// Trick found in the Wwise Unreal Integration... it&#39;s worth what it&#39;s worth!</span>
-        <span class="kw">let</span> <span class="ident">tmp_id</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">event_id</span> <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">T</span>) <span class="kw">as</span> <span class="ident">AkGameObjectID</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PostEventAtLocation&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="doccomment">/// Selects an event by name or by ID, to play at a given location
+    </span><span class="kw">pub fn </span>new&lt;T: Into&lt;AkID&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, U: ToAkTransform&gt;(event_id: T, at: U) -&gt; <span class="self">Self </span>{
+        <span class="comment">// Trick found in the Wwise Unreal Integration... it&#39;s worth what it&#39;s worth!
+        </span><span class="kw">let </span>tmp_id = (<span class="kw-2">&amp;</span>event_id <span class="kw">as </span><span class="kw-2">*const </span>T) <span class="kw">as </span>AkGameObjectID;
 
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">RPostEvent::new</span>(<span class="ident">tmp_id</span>, <span class="ident">event_id</span>),
-            <span class="ident">has_flags</span>: <span class="bool-val">false</span>,
-            <span class="ident">tmp_id</span>,
-            <span class="ident">at</span>: <span class="ident">at</span>.<span class="ident">to_ak_transform</span>(),
+        <span class="self">Self </span>{
+            inner: RPostEvent::new(tmp_id, event_id),
+            has_flags: <span class="bool-val">false</span>,
+            tmp_id,
+            at: at.to_ak_transform(),
         }
     }
 
-    <span class="doccomment">/// Add flags before posting. Bitmask: see [AkCallbackType].</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_flags</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">AkCallbackType</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">has_flags</span> <span class="op">=</span> <span class="ident">flags</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="ident">AkCallbackType</span>(<span class="number">0</span>).<span class="number">0</span>;
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">add_flags</span>(<span class="ident">flags</span>);
-        <span class="self">self</span>
-    }
+    <span class="doccomment">/// Add flags before posting. Bitmask: see [AkCallbackType].
+    </span><span class="kw">pub fn </span>add_flags(<span class="kw-2">&amp;mut </span><span class="self">self</span>, flags: AkCallbackType) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.has_flags = flags.<span class="number">0 </span>&gt; AkCallbackType(<span class="number">0</span>).<span class="number">0</span>;
+        <span class="self">self</span>.inner.add_flags(flags);
+        <span class="self">self
+    </span>}
 
-    <span class="doccomment">/// Set flags before posting. Bitmask: see [AkCallbackType]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">flags</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">flags</span>: <span class="ident">AkCallbackType</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">has_flags</span> <span class="op">=</span> <span class="ident">flags</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="ident">AkCallbackType</span>(<span class="number">0</span>).<span class="number">0</span>;
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">flags</span>(<span class="ident">flags</span>);
-        <span class="self">self</span>
-    }
+    <span class="doccomment">/// Set flags before posting. Bitmask: see [AkCallbackType]
+    </span><span class="kw">pub fn </span>flags(<span class="kw-2">&amp;mut </span><span class="self">self</span>, flags: AkCallbackType) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.has_flags = flags.<span class="number">0 </span>&gt; AkCallbackType(<span class="number">0</span>).<span class="number">0</span>;
+        <span class="self">self</span>.inner.flags(flags);
+        <span class="self">self
+    </span>}
 
-    <span class="attribute">#[<span class="ident">tracing::instrument</span>(<span class="ident">level</span> <span class="op">=</span> <span class="string">&quot;debug&quot;</span>, <span class="ident">skip_all</span>)]</span>
-    <span class="doccomment">/// Posts the event to the sound engine.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Provide a clone of the [`Res&lt;CallbackChannel&gt;`] resource if you want to receive callbacks</span>
-    <span class="doccomment">/// from Wwise (see [Self::flags()], [Self::add_flags()]).</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">cb_channel</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CallbackChannel</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AkPlayingID</span>, <span class="ident">AkResult</span><span class="op">&gt;</span> {
-        <span class="ident">register_game_obj</span>(<span class="self">self</span>.<span class="ident">tmp_id</span>)<span class="question-mark">?</span>;
-        <span class="ident">set_position</span>(<span class="self">self</span>.<span class="ident">tmp_id</span>, <span class="self">self</span>.<span class="ident">at</span>)<span class="question-mark">?</span>;
-        <span class="macro">debug!</span>(<span class="string">&quot;Registered tmp Wwise emitter {}&quot;</span>, <span class="self">self</span>.<span class="ident">tmp_id</span>);
+    <span class="attribute">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]</span>
+    <span class="doccomment">/// Posts the event to the sound engine.
+    ///
+    /// Provide a clone of the [`Res&lt;CallbackChannel&gt;`] resource if you want to receive callbacks
+    /// from Wwise (see [Self::flags()], [Self::add_flags()]).
+    </span><span class="kw">pub fn </span>post(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cb_channel: <span class="prelude-ty">Option</span>&lt;CallbackChannel&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AkPlayingID, AkResult&gt; {
+        register_game_obj(<span class="self">self</span>.tmp_id)<span class="question-mark">?</span>;
+        set_position(<span class="self">self</span>.tmp_id, <span class="self">self</span>.at)<span class="question-mark">?</span>;
+        <span class="macro">debug!</span>(<span class="string">&quot;Registered tmp Wwise emitter {}&quot;</span>, <span class="self">self</span>.tmp_id);
 
-        <span class="kw">let</span> <span class="ident">post_result</span> <span class="op">=</span> <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">has_flags</span>, <span class="ident">cb_channel</span>) {
-            (<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">post</span>(),
+        <span class="kw">let </span>post_result = <span class="kw">match </span>(<span class="self">self</span>.has_flags, cb_channel) {
+            (<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; <span class="self">self</span>.inner.post(),
             (<span class="bool-val">true</span>, <span class="prelude-val">None</span>) =&gt; {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">has_flags</span> {
+                <span class="kw">if </span><span class="self">self</span>.has_flags {
                     <span class="macro">warn!</span>(
                         <span class="string">&quot;Event {:?} wants callbacks but didn&#39;t pass a World; you won&#39;t receive bevy events for it&quot;</span>,
-                        <span class="self">self</span>.<span class="ident">inner</span>,
+                        <span class="self">self</span>.inner,
                     )
                 }
-                <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">post</span>()
+                <span class="self">self</span>.inner.post()
             }
-            (<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="ident">cb_channel</span>)) =&gt; {
-                <span class="comment">// self.inner.add_flags(AkCallbackType::AK_EndOfEvent);</span>
-                <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">post_with_callback</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">cb_info</span><span class="op">|</span> {
-                    <span class="kw">if</span> <span class="ident">cb_channel</span>.<span class="ident">sender</span>.<span class="ident">try_send</span>(<span class="ident">cb_info</span>.<span class="ident">clone</span>()).<span class="ident">is_err</span>() {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Could not send {:?}&quot;</span>, <span class="ident">cb_info</span>);
+            (<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(cb_channel)) =&gt; {
+                <span class="comment">// self.inner.add_flags(AkCallbackType::AK_EndOfEvent);
+                </span><span class="self">self</span>.inner.post_with_callback(<span class="kw">move </span>|cb_info| {
+                    <span class="kw">if </span>cb_channel.sender.try_send(cb_info.clone()).is_err() {
+                        <span class="macro">warn!</span>(<span class="string">&quot;Could not send {:?}&quot;</span>, cb_info);
                     }
 
-                    <span class="comment">// Clean static maps of playing IDs?</span>
-                    <span class="comment">// if let AkCallbackInfo::Event {</span>
-                    <span class="comment">//     callback_type: AkCallbackType::AK_EndOfEvent,</span>
-                    <span class="comment">//     ..</span>
-                    <span class="comment">// } = cb_info</span>
-                    <span class="comment">// {</span>
-                    <span class="comment">//     // clean...</span>
-                    <span class="comment">// }</span>
-                })
+                    <span class="comment">// Clean static maps of playing IDs?
+                    // if let AkCallbackInfo::Event {
+                    //     callback_type: AkCallbackType::AK_EndOfEvent,
+                    //     ..
+                    // } = cb_info
+                    // {
+                    //     // clean...
+                    // }
+                </span>})
             }
         };
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">akr</span>) <span class="op">=</span> <span class="ident">unregister_game_obj</span>(<span class="self">self</span>.<span class="ident">tmp_id</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(akr) = unregister_game_obj(<span class="self">self</span>.tmp_id) {
             <span class="macro">error!</span>(
                 <span class="string">&quot;Couldn&#39;t unregister Wwise emitter {}; this might be a leak - {}&quot;</span>,
-                <span class="self">self</span>.<span class="ident">tmp_id</span>, <span class="ident">akr</span>
+                <span class="self">self</span>.tmp_id, akr
             );
-        } <span class="kw">else</span> {
-            <span class="macro">debug!</span>(<span class="string">&quot;Unregistered tmp Wwise emitter {}&quot;</span>, <span class="self">self</span>.<span class="ident">tmp_id</span>);
+        } <span class="kw">else </span>{
+            <span class="macro">debug!</span>(<span class="string">&quot;Unregistered tmp Wwise emitter {}&quot;</span>, <span class="self">self</span>.tmp_id);
         }
-        <span class="ident">post_result</span>
+        post_result
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="bevy_rrise" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (76d770ac2 2022-04-02)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="bevy_rrise" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (e1b28cd2f 2022-08-19)" ></div></body></html>
