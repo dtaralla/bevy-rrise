@@ -78,6 +78,7 @@ It can also help diagnose why your sounds might not work.
 | Bevy | rrise | bevy-rrise |
 |:----:|:-----:|:----------:|
 | 0.7  |  0.2  |    0.1     |
+| 0.8  |  0.2  |    0.2     |
 
 ### Legal stuff
 Wwise and the Wwise logo are trademarks of Audiokinetic Inc., registered in the U.S. and other countries.

@@ -4,6 +4,7 @@
 
 use crate::plugin::CallbackChannel;
 use crate::ToAkTransform;
+use bevy::math::Affine3A;
 use bevy::prelude::*;
 #[cfg(wwrelease)]
 use rrise::sound_engine::register_game_obj;
@@ -173,7 +174,10 @@ impl RrEmitterBundle {
 
     /// Sets the rotation of this emitter.
     pub fn with_rotation(mut self, rotation: Quat) -> Self {
-        self.global_tfm = self.global_tfm.with_rotation(rotation);
+        self.global_tfm = GlobalTransform::from(Affine3A::from_rotation_translation(
+            rotation,
+            self.global_tfm.translation(),
+        ));
         self
     }
 

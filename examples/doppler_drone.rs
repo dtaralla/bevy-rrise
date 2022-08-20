@@ -4,7 +4,6 @@
 
 use bevy::log::LogSettings;
 use bevy::prelude::*;
-use bevy::render::camera::Camera3d;
 use bevy_easings::{Ease, EaseMethod, EasingComponent, EasingType, EasingsPlugin};
 use bevy_rrise::emitter_listener::{RrDynamicEmitterBundle, RrListener};
 use bevy_rrise::plugin::RrisePlugin;
@@ -65,7 +64,9 @@ fn update(
     } else {
         SPEED_OF_SOUND
             / (SPEED_OF_SOUND
-                - easing.direction() as f32 * TRAJECTORY_SPEED * -tfm.translation.x.signum())
+                - easing.direction() as i32 as f32
+                    * TRAJECTORY_SPEED
+                    * -tfm.translation().x.signum())
     };
 
     rtpc.with_value(doppler_factor);
@@ -76,7 +77,7 @@ fn update(
 
     // Make camera look at emitter
     let mut camera_tfm = camera.single_mut();
-    camera_tfm.look_at(tfm.translation, Vec3::Y);
+    camera_tfm.look_at(tfm.translation(), Vec3::Y);
 
     Ok(())
 }
@@ -90,7 +91,7 @@ fn setup_scene(
 ) {
     // Setup cameras
     commands
-        .spawn_bundle(PerspectiveCameraBundle {
+        .spawn_bundle(Camera3dBundle {
             transform: Transform::from_xyz(0., 0., 15.).looking_at(Vec3::default(), Vec3::Y),
             ..default()
         })

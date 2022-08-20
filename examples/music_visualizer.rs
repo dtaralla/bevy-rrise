@@ -136,11 +136,10 @@ fn setup_scene(
     asset_server: Res<AssetServer>,
 ) {
     // Setup cameras
-    commands.spawn_bundle(PerspectiveCameraBundle {
+    commands.spawn_bundle(Camera3dBundle {
         transform: Transform::from_xyz(0., 0., 15.).looking_at(Vec3::default(), Vec3::Y),
         ..default()
     });
-    commands.spawn_bundle(UiCameraBundle::default());
 
     // Setup light
     commands.spawn_bundle(DirectionalLightBundle {
@@ -168,7 +167,7 @@ fn setup_scene(
             style: Style {
                 align_self: AlignSelf::FlexEnd,
                 position_type: PositionType::Absolute,
-                position: Rect {
+                position: UiRect {
                     bottom: Val::Px(8.0),
                     right: Val::Px(8.0),
                     ..default()

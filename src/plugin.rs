@@ -268,7 +268,7 @@ fn init_sound_engine(
     let platform = "Linux";
     let mut gen_banks_folder = plugin_settings.banks_location.join(platform);
     if gen_banks_folder.is_relative() {
-        gen_banks_folder = FileAssetIo::get_root_path()
+        gen_banks_folder = FileAssetIo::get_base_path()
             .join(&asset_server_settings.asset_folder)
             .join(gen_banks_folder);
     }
