@@ -16,7 +16,7 @@ It relies on my [Rrise](https://github.com/dtaralla/rrise) crate for the Rust bi
 **First, take a look at the system requirements for [Rrise](https://github.com/dtaralla/rrise)**: they are the same 
 for bevy-rrise!
 
-Definitely take a look at the [examples](/examples) for the best way to learn how this crate works.
+Definitely take a look at the [examples](/examples) for the best way to learn how this crate works. To be able to compile and run the examples, you should generate the example Wwise project soundbanks first (located in [examples/WwiseProject](/examples/WwiseProject)).
 
 Just add the plugin settings as resources to your Bevy app, then add the plugin itself. That's it, you can now spawn 
 `RrEmitter` components, `RrEmitterBundle`s or `RrDynamicEmitterBundle`s!
