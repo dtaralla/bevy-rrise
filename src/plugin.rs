@@ -308,7 +308,10 @@ fn process_callbacks(callback_channel: Res<CallbackChannel>, mut ew: EventWriter
     }
 }
 
-fn setup_audio(mut commands: Commands) -> Result<(), AkResult> {
+fn setup_audio(
+    mut commands: Commands,
+    settings: Res<PluginSettingsResource>,
+) -> Result<(), AkResult> {
     // Load Init.bnk - always required!
     if let Err(akr) = sound_engine::load_bank_by_name("Init.bnk") {
         error!("Init.bnk could not be loaded; there will be no audio. Make sure you generate all soundbanks before running");
@@ -316,9 +319,11 @@ fn setup_audio(mut commands: Commands) -> Result<(), AkResult> {
     }
 
     // Setup default listener
-    let mut entity_cmds = commands.spawn_bundle(RrListenerBundle::default());
-    #[cfg(not(wwrelease))]
-    entity_cmds.insert(Name::new("RrMainDefaultListener"));
+    if settings.read().unwrap().plugin.spawn_default_listener {
+        let mut entity_cmds = commands.spawn(RrListenerBundle::default());
+        #[cfg(not(wwrelease))]
+        entity_cmds.insert(Name::new("RrMainDefaultListener"));
+    }
 
     Ok(())
 }
