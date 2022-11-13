@@ -32,9 +32,6 @@ optional = true
 version = "0.2"
 optional = true
 
-[target.'cfg(windows)'.dependencies]
-raw-window-handle = "0.4"
-
 [dependencies.bevy]
 version = "0.8"
 default-features = false
