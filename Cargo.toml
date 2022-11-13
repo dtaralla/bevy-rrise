@@ -15,6 +15,7 @@ exclude = [
 ]
 
 [dependencies]
+cc = { version = "1.0.73", optional = true }
 crossbeam-channel = "0.5"
 
 [dependencies.rrise]
@@ -49,8 +50,8 @@ features = ["x11"]
 
 [[example]]
 name = "music_visualizer"
-required-features = ["bevy/render", "rrise-headers", "rrise/AkParametricEQFX"]
+required-features = ["cc", "bevy/render", "rrise-headers", "rrise/AkParametricEQFX"]
 
 [[example]]
 name = "doppler_drone"
-required-features = ["bevy/render", "bevy_easings", "rrise/AkParametricEQFX"]
+required-features = ["cc", "bevy/render", "bevy_easings", "rrise/AkParametricEQFX"]
