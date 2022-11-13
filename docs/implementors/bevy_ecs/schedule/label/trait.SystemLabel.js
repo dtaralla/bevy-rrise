@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"bevy_rrise":[["impl SystemLabel for <a class=\"enum\" href=\"bevy_rrise/plugin/enum.RriseLabel.html\" title=\"enum bevy_rrise::plugin::RriseLabel\">RriseLabel</a> <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Self: 'static,&nbsp;</span>"]]
+"bevy_rrise":[["impl SystemLabel for <a class=\"enum\" href=\"bevy_rrise/plugin/enum.RriseLabel.html\" title=\"enum bevy_rrise::plugin::RriseLabel\">RriseLabel</a><span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Self: 'static,</span>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

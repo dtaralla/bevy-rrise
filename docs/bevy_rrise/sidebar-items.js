@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":[["rrise_setting","Shorthand for creating `Rrise*Settings` [`Res<T>`] types."]],"mod":[["emitter_listener",""],["plugin",""],["sound_engine",""]],"struct":[["AkCallbackEvent",""]],"trait":[["ToAkTransform",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["emitter_listener",""],["plugin",""],["sound_engine",""]],"struct":[["AkCallbackEvent",""]],"trait":[["ToAkTransform",""]]};

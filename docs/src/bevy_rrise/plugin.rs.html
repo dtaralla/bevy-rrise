@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\plugin.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>plugin.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../bevy_rrise/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../bevy_rrise/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\plugin.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>plugin.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-eabf764633b9d7be.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-777f3e9583f8c92d.css"><link rel="stylesheet" disabled href="../../static.files/dark-e2f4109f2e82e3af.css"><link rel="stylesheet" disabled href="../../static.files/ayu-c360e709a65bed99.css"><script id="default-settings" ></script><script src="../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../static.files/source-script-74087aa2e88f4475.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-c2d2a5dbaed13e6b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../bevy_rrise/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -360,6 +360,87 @@
 <span id="360">360</span>
 <span id="361">361</span>
 <span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright (c) 2022 Contributors to the bevy-rrise project
  */
@@ -370,37 +451,40 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::AkCallbackEvent;
 <span class="kw">use </span>bevy::app::AppExit;
-<span class="kw">use </span>bevy::asset::{AssetServerSettings, FileAssetIo};
+<span class="kw">use </span>bevy::asset::FileAssetIo;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>crossbeam_channel::{Receiver, Sender};
 <span class="kw">use </span>rrise::settings::<span class="kw-2">*</span>;
 <span class="kw">use </span>rrise::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::cell::RefCell;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::{Arc, RwLock};
 
-<span class="attribute">#[macro_export]</span>
-<span class="doccomment">/// Shorthand for creating `Rrise*Settings` [`Res&lt;T&gt;`] types.
-</span><span class="macro">macro_rules!</span> rrise_setting {
-    (<span class="macro-nonterminal">$setting</span>:expr) =&gt; {
-        Arc::new(RwLock::new(<span class="macro-nonterminal">$setting</span>))
-    };
+<span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
+</span><span class="kw">pub enum </span>RriseLabel {
+    <span class="doccomment">/// After this in [StartupStage::PreStartup], it is safe to call bevy-rrise APIs and Rrise raw
+    /// APIs until Bevy&#39;s [AppExit] event is emitted.
+    </span>SoundEngineInitialized,
+
+    <span class="doccomment">/// After this in [StartupStage::PreStartup], you can consider the Init.bnk loaded and a possible
+    /// default [RrListenerBundle] spawned until Bevy&#39;s [AppExit] event is emitted.
+    ///
+    /// *See also* [RrisePluginSettings::spawn_default_listener]
+    </span>RriseReady,
+
+    <span class="doccomment">/// After this in [CoreStage::PreUpdate], the EventReader&lt;AkCallbackEvent&gt; systems that run this
+    /// frame will be populated with Rrise callbacks that occurred since the last execution of this label.
+    </span>RriseCallbackEventsPopulated,
+
+    <span class="doccomment">/// This marks the moment in the frame&#39;s [CoreStage::PostUpdate] where the sound engine gets
+    /// terminated if an [AppExit] event occurred. It is not safe to call bevy-rrise APIs and Rrise
+    /// raw APIs from now on.
+    </span>RriseMightBeTerminated,
 }
 
-<span class="kw">pub type </span>RriseMemSettings = Arc&lt;RwLock&lt;AkMemSettings&gt;&gt;;
-<span class="kw">pub type </span>RriseStreamMgrSettings = Arc&lt;RwLock&lt;AkStreamMgrSettings&gt;&gt;;
-<span class="kw">pub type </span>RriseDeviceSettings = Arc&lt;RwLock&lt;AkDeviceSettings&gt;&gt;;
-<span class="kw">pub type </span>RriseSoundEngineSettings = Arc&lt;RwLock&lt;AkInitSettings&gt;&gt;;
-<span class="kw">pub type </span>RriseSoundEnginePlatformSettings = Arc&lt;RwLock&lt;AkPlatformInitSettings&gt;&gt;;
-<span class="kw">pub type </span>RriseMusicSettings = Arc&lt;RwLock&lt;AkMusicSettings&gt;&gt;;
-<span class="attribute">#[cfg(not(wwrelease))]</span>
-<span class="kw">pub type </span>RriseCommSettings = Arc&lt;RwLock&lt;AkCommSettings&gt;&gt;;
-
-<span class="attribute">#[derive(Default)]</span>
-<span class="kw">pub struct </span>RrisePlugin;
-
-<span class="attribute">#[derive(Debug, Clone)]</span>
-<span class="doccomment">/// Plugin settings
-</span><span class="kw">pub struct </span>RrisePluginSettings {
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="doccomment">/// Plugin basic settings
+</span><span class="kw">pub struct </span>RriseBasicSettings {
     <span class="doccomment">/// One of the languages supported by your Wwise project in Project &gt; Languages.
     ///
     /// Defaults to English(US).
@@ -437,7 +521,7 @@
     </span><span class="kw">pub </span>spawn_default_listener: bool,
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>RrisePluginSettings {
+<span class="kw">impl </span>Default <span class="kw">for </span>RriseBasicSettings {
     <span class="doccomment">/// Sets `default_language` to `English(US)` and `banks_location` to `soundbanks`, expecting
     /// soundbanks files to be in `[cargo dir OR exe directory]/assets/soundbanks/[Platform]`.
     </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
@@ -449,71 +533,150 @@
     }
 }
 
-<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]</span>
-<span class="kw">pub enum </span>RriseLabel {
-    <span class="doccomment">/// After this in [StartupStage::PreStartup], it is safe to call bevy-rrise APIs and Rrise raw
-    /// APIs until Bevy&#39;s [AppExit] event is emitted.
-    </span>SoundEngineInitialized,
+<span class="kw">struct </span>PluginSettingsInternal {
+    bevy_asset_folder: String,
+    plugin: RriseBasicSettings,
+    mem: AkMemSettings,
+    stream: RefCell&lt;AkStreamMgrSettings&gt;,
+    dev: RefCell&lt;AkDeviceSettings&gt;,
+    engine: RefCell&lt;AkInitSettings&gt;,
+    pltfm: RefCell&lt;AkPlatformInitSettings&gt;,
+    music: AkMusicSettings,
+    <span class="attr">#[cfg(not(wwrelease))]
+    </span>comms: AkCommSettings,
+}
 
-    <span class="doccomment">/// After this in [StartupStage::PreStartup], you can consider the Init.bnk loaded and a possible
-    /// default [RrListenerBundle] spawned until Bevy&#39;s [AppExit] event is emitted.
-    ///
-    /// *See also* [RrisePluginSettings::spawn_default_listener]
-    </span>RriseReady,
+<span class="kw">impl </span>Default <span class="kw">for </span>PluginSettingsInternal {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            bevy_asset_folder: default(),
+            plugin: default(),
+            mem: default(),
+            stream: default(),
+            dev: default(),
+            engine: RefCell::new(AkInitSettings {
+                install_assert_hook: <span class="bool-val">true</span>,
+                ..default()
+            }),
+            pltfm: default(),
+            music: default(),
+            <span class="attr">#[cfg(not(wwrelease))]
+            </span>comms: default(),
+        }
+    }
+}
 
-    <span class="doccomment">/// After this in [CoreStage::PreUpdate], the EventReader&lt;AkCallbackEvent&gt; systems that run this
-    /// frame will be populated with Rrise callbacks that occurred since the last execution of this label.
-    </span>RriseCallbackEventsPopulated,
+<span class="comment">// SAFETY
+// PluginSettingsInternal is not meant to be accessed by any systems other than init_sound_engine().
+// Plus, it&#39;s an init system, so there is no way this structure is going to be accessed from
+// more than 1 thread at a time.
+</span><span class="kw">unsafe impl </span>Sync <span class="kw">for </span>PluginSettingsInternal {}
 
-    <span class="doccomment">/// This marks the moment in the frame&#39;s [CoreStage::PostUpdate] where the sound engine gets
-    /// terminated if an [AppExit] event occurred. It is not safe to call bevy-rrise APIs and Rrise
-    /// raw APIs from now on.
-    </span>RriseMightBeTerminated,
+<span class="attr">#[derive(Deref, Resource)]
+</span><span class="kw">struct </span>PluginSettingsResource(Arc&lt;RwLock&lt;PluginSettingsInternal&gt;&gt;);
+
+<span class="kw">pub struct </span>RrisePlugin(Arc&lt;RwLock&lt;PluginSettingsInternal&gt;&gt;);
+
+<span class="kw">impl </span>Default <span class="kw">for </span>RrisePlugin {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(Arc::new(RwLock::new(PluginSettingsInternal::default())))
+    }
+}
+
+<span class="kw">impl </span>RrisePlugin {
+    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        default()
+    }
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_plugin_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: RriseBasicSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().plugin = settings;
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_mem_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkMemSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().mem = settings;
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_music_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkMusicSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().music = settings;
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_engine_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkInitSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().engine = RefCell::new(settings);
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_stream_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkStreamMgrSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().stream = RefCell::new(settings);
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_dev_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkDeviceSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().dev = RefCell::new(settings);
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_platform_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkPlatformInitSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().pltfm = RefCell::new(settings);
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[cfg(not(wwrelease))]
+    #[allow(unused_mut)]
+    </span><span class="kw">pub fn </span>with_comms_settings(<span class="kw-2">mut </span><span class="self">self</span>, settings: AkCommSettings) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.<span class="number">0</span>.write().unwrap().comms = settings;
+        <span class="self">self
+    </span>}
 }
 
 <span class="kw">impl </span>Plugin <span class="kw">for </span>RrisePlugin {
     <span class="kw">fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>, app: <span class="kw-2">&amp;mut </span>App) {
-        app.world
-            .get_resource_or_insert_with(RriseMemSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseStreamMgrSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseDeviceSettings::default);
-        app.world.get_resource_or_insert_with(|| {
-            <span class="macro">rrise_setting!</span>[AkInitSettings {
-                install_assert_hook: <span class="bool-val">true</span>,
-                ..default()
-            }]
-        });
-        app.world
-            .get_resource_or_insert_with(RriseSoundEnginePlatformSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseMusicSettings::default);
-        app.world
-            .get_resource_or_insert_with(RrisePluginSettings::default);
-        <span class="attribute">#[cfg(not(wwrelease))]</span>
-        app.world
-            .get_resource_or_insert_with(RriseCommSettings::default);
+        <span class="kw">let </span>plugin_settings = PluginSettingsResource(<span class="self">self</span>.<span class="number">0</span>.clone());
+
+        <span class="kw">if </span>plugin_settings
+            .read()
+            .unwrap()
+            .plugin
+            .banks_location
+            .is_relative()
+        {
+            <span class="kw">let </span>asset_folder = <span class="kw-2">&amp;</span>app
+                .get_added_plugins::&lt;AssetPlugin&gt;()
+                .first()
+                .expect(<span class="string">&quot;AssetPlugin must be inserted before Rrise if banks_location setting is a relative path&quot;</span>)
+                .asset_folder;
+            plugin_settings.write().unwrap().bevy_asset_folder = asset_folder.clone();
+        }
 
         app.add_event::&lt;AkCallbackEvent&gt;()
+            .insert_resource(plugin_settings)
             .insert_resource(CallbackChannel::new())
             .add_startup_system_to_stage(
                 StartupStage::PreStartup,
                 init_sound_engine
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label(RriseLabel::SoundEngineInitialized),
             )
             .add_startup_system_to_stage(
                 StartupStage::PreStartup,
                 setup_audio
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .after(RriseLabel::SoundEngineInitialized)
                     .label(RriseLabel::RriseReady),
             )
             .add_system_to_stage(
                 CoreStage::PreUpdate,
                 init_new_rr_objects
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .before(RriseLabel::RriseCallbackEventsPopulated),
             )
             .add_system_to_stage(
@@ -523,32 +686,32 @@
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 stop_destroyed_emitters
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .before(<span class="string">&quot;Rrise_despawn_silent_emitters&quot;</span>), <span class="comment">// No need to stop silent emitters despawned this frame
             </span>)
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 despawn_silent_emitters
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label(<span class="string">&quot;Rrise_despawn_silent_emitters&quot;</span>),
             )
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 update_rr_position
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .after(<span class="string">&quot;Rrise_despawn_silent_emitters&quot;</span>), <span class="comment">// No need to stop silent emitters despawned this frame,
             </span>)
             .add_system_to_stage(
                 CoreStage::Last,
                 audio_rendering
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label(RriseLabel::RriseMightBeTerminated),
             );
     }
 }
 
-<span class="attribute">#[derive(Clone)]</span>
-<span class="doccomment">/// Resource to query in systems where you want to post callback-enabled events.
+<span class="attr">#[derive(Clone, Resource)]
+</span><span class="doccomment">/// Resource to query in systems where you want to post callback-enabled events.
 ///
 /// *See also* [RrEmitter::post_associated_event()](crate::emitter_listener::RrEmitter::post_associated_event())
 </span><span class="kw">pub struct </span>CallbackChannel {
@@ -588,7 +751,10 @@
     }
 }
 
-<span class="kw">fn </span>setup_audio(<span class="kw-2">mut </span>commands: Commands) -&gt; <span class="prelude-ty">Result</span>&lt;(), AkResult&gt; {
+<span class="kw">fn </span>setup_audio(
+    <span class="kw-2">mut </span>commands: Commands,
+    settings: Res&lt;PluginSettingsResource&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), AkResult&gt; {
     <span class="comment">// Load Init.bnk - always required!
     </span><span class="kw">if let </span><span class="prelude-val">Err</span>(akr) = sound_engine::load_bank_by_name(<span class="string">&quot;Init.bnk&quot;</span>) {
         <span class="macro">error!</span>(<span class="string">&quot;Init.bnk could not be loaded; there will be no audio. Make sure you generate all soundbanks before running&quot;</span>);
@@ -596,88 +762,84 @@
     }
 
     <span class="comment">// Setup default listener
-    </span><span class="kw">let </span><span class="kw-2">mut </span>entity_cmds = commands.spawn_bundle(RrListenerBundle::default());
-    <span class="attribute">#[cfg(not(wwrelease))]</span>
-    entity_cmds.insert(Name::new(<span class="string">&quot;RrMainDefaultListener&quot;</span>));
+    </span><span class="kw">if </span>settings.read().unwrap().plugin.spawn_default_listener {
+        <span class="kw">let </span><span class="kw-2">mut </span>entity_cmds = commands.spawn(RrListenerBundle::default());
+        <span class="attr">#[cfg(not(wwrelease))]
+        </span>entity_cmds.insert(Name::new(<span class="string">&quot;RrMainDefaultListener&quot;</span>));
+    }
 
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="attribute">#[cfg_attr(target_os = <span class="string">&quot;linux&quot;</span>, allow(unused_variables))]</span>
-<span class="attribute">#[allow(clippy::too_many_arguments)]</span>
-<span class="attribute">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]</span>
-<span class="kw">fn </span>init_sound_engine(
-    mem_settings: Res&lt;Arc&lt;RwLock&lt;AkMemSettings&gt;&gt;&gt;,
-    stream_settings: Res&lt;Arc&lt;RwLock&lt;AkStreamMgrSettings&gt;&gt;&gt;,
-    device_settings: Res&lt;Arc&lt;RwLock&lt;AkDeviceSettings&gt;&gt;&gt;,
-    sound_engine_settings: Res&lt;Arc&lt;RwLock&lt;AkInitSettings&gt;&gt;&gt;,
-    sound_engine_platform_settings: Res&lt;Arc&lt;RwLock&lt;AkPlatformInitSettings&gt;&gt;&gt;,
-    music_settings: Res&lt;Arc&lt;RwLock&lt;AkMusicSettings&gt;&gt;&gt;,
-    <span class="attribute">#[cfg(not(wwrelease))]</span> comms_settings: Res&lt;Arc&lt;RwLock&lt;AkCommSettings&gt;&gt;&gt;,
-    plugin_settings: Res&lt;RrisePluginSettings&gt;,
-    asset_server_settings: Res&lt;AssetServerSettings&gt;,
+<span class="attr">#[cfg_attr(target_os = <span class="string">&quot;linux&quot;</span>, allow(unused_variables))]
+#[allow(clippy::too_many_arguments)]
+#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]
+</span><span class="kw">fn </span>init_sound_engine(
+    plugin_settings: ResMut&lt;PluginSettingsResource&gt;,
     windows: Res&lt;Windows&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AkResult&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>settings = plugin_settings.write().unwrap();
+
     <span class="comment">// init memorymgr
-    </span>memory_mgr::init(<span class="kw-2">&amp;mut </span>mem_settings.write().unwrap())<span class="question-mark">?</span>;
+    </span>memory_mgr::init(<span class="kw-2">&amp;mut </span>settings.mem)<span class="question-mark">?</span>;
     <span class="macro">assert!</span>(memory_mgr::is_initialized());
     <span class="macro">debug!</span>(<span class="string">&quot;Memory manager initialized&quot;</span>);
 
     <span class="comment">// init streamingmgr
-    </span><span class="attribute">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)]</span>
-    <span class="kw">let </span>platform = <span class="string">&quot;Windows&quot;</span>;
-    <span class="attribute">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]</span>
-    <span class="kw">let </span>platform = <span class="string">&quot;Linux&quot;</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>gen_banks_folder = plugin_settings.banks_location.join(platform);
+    </span><span class="attr">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)]
+    </span><span class="kw">let </span>platform = <span class="string">&quot;Windows&quot;</span>;
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+    </span><span class="kw">let </span>platform = <span class="string">&quot;Linux&quot;</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>gen_banks_folder = settings.plugin.banks_location.join(platform);
     <span class="kw">if </span>gen_banks_folder.is_relative() {
         gen_banks_folder = FileAssetIo::get_base_path()
-            .join(<span class="kw-2">&amp;</span>asset_server_settings.asset_folder)
+            .join(<span class="kw-2">&amp;</span>settings.bevy_asset_folder)
             .join(gen_banks_folder);
     }
+
     stream_mgr::init_default_stream_mgr(
-        <span class="kw-2">&amp;</span>stream_settings.read().unwrap(),
-        <span class="kw-2">&amp;mut </span>device_settings.write().unwrap(),
+        <span class="kw-2">&amp;</span>settings.stream.borrow(),
+        <span class="kw-2">&amp;mut </span>settings.dev.borrow_mut(),
         gen_banks_folder.as_os_str().to_str().unwrap(),
     )<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Default streaming manager initialized&quot;</span>);
 
-    stream_mgr::set_current_language(<span class="kw-2">&amp;</span>plugin_settings.init_language)<span class="question-mark">?</span>;
+    stream_mgr::set_current_language(<span class="kw-2">&amp;</span>settings.plugin.init_language)<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Current language set&quot;</span>);
 
     <span class="comment">// init soundengine
-    </span>{
-        <span class="attribute">#[cfg(windows)]</span>
-        <span class="comment">// Find the Bevy window and register it as owner of the sound engine
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(w) = windows.iter().next() {
-            <span class="kw">use </span>raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
-            sound_engine_platform_settings.write().unwrap().h_wnd.store(
-                <span class="kw">match unsafe </span>{ w.raw_window_handle().get_handle().raw_window_handle() } {
-                    <span class="attribute">#[cfg(windows)]</span>
-                    RawWindowHandle::Win32(h) =&gt; h.hwnd,
-                    other =&gt; {
-                        <span class="macro">panic!</span>(<span class="string">&quot;Unexpected window handle: {:?}&quot;</span>, other)
-                    }
-                },
-                std::sync::atomic::Ordering::SeqCst,
-            );
-        }
+    </span><span class="attr">#[cfg(windows)]
+    </span><span class="comment">// Find the Bevy window and register it as owner of the sound engine
+    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(w) = windows.iter().next() {
+        <span class="kw">use </span>raw_window_handle::RawWindowHandle;
 
-        sound_engine::init(
-            <span class="kw-2">&amp;mut </span>sound_engine_settings.write().unwrap(),
-            <span class="kw-2">&amp;mut </span>sound_engine_platform_settings.write().unwrap(),
-        )<span class="question-mark">?</span>;
+        settings.pltfm.get_mut().h_wnd.store(
+            <span class="kw">match </span>w.raw_handle().unwrap().window_handle {
+                <span class="attr">#[cfg(windows)]
+                </span>RawWindowHandle::Win32(h) =&gt; h.hwnd,
+                other =&gt; {
+                    <span class="macro">panic!</span>(<span class="string">&quot;Unexpected window handle: {:?}&quot;</span>, other)
+                }
+            },
+            std::sync::atomic::Ordering::SeqCst,
+        );
     }
+
+    sound_engine::init(
+        <span class="kw-2">&amp;mut </span>settings.engine.borrow_mut(),
+        <span class="kw-2">&amp;mut </span>settings.pltfm.borrow_mut(),
+    )<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Internal sound engine initialized&quot;</span>);
 
     <span class="comment">// init musicengine
-    </span>music_engine::init(<span class="kw-2">&amp;mut </span>music_settings.write().unwrap())<span class="question-mark">?</span>;
+    </span>music_engine::init(<span class="kw-2">&amp;mut </span>settings.music)<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Internal music engine initialized&quot;</span>);
 
     <span class="comment">// init comms
-    </span><span class="attribute">#[cfg(not(wwrelease))]</span>
-    {
-        communication::init(<span class="kw-2">&amp;</span>comms_settings.read().unwrap())<span class="question-mark">?</span>;
+    </span><span class="attr">#[cfg(not(wwrelease))]
+    </span>{
+        communication::init(<span class="kw-2">&amp;</span>settings.comms)<span class="question-mark">?</span>;
         <span class="macro">debug!</span>(<span class="string">&quot;Profiling (comms) initialized&quot;</span>);
     }
 
@@ -689,15 +851,15 @@
     }
 }
 
-<span class="attribute">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]</span>
-<span class="kw">fn </span>term_sound_engine() -&gt; <span class="prelude-ty">Result</span>&lt;(), AkResult&gt; {
+<span class="attr">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]
+</span><span class="kw">fn </span>term_sound_engine() -&gt; <span class="prelude-ty">Result</span>&lt;(), AkResult&gt; {
     sound_engine::stop_all(<span class="prelude-val">None</span>);
     sound_engine::unregister_all_game_obj()<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;All objects stopped and unregistered&quot;</span>);
 
     <span class="comment">// term comms
-    </span><span class="attribute">#[cfg(not(wwrelease))]</span>
-    {
+    </span><span class="attr">#[cfg(not(wwrelease))]
+    </span>{
         communication::term();
         <span class="macro">debug!</span>(<span class="string">&quot;Profiling (comms) terminated&quot;</span>);
     }
@@ -723,4 +885,4 @@
     <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="bevy_rrise" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (e1b28cd2f 2022-08-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="bevy_rrise" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.0-nightly (42325c525 2022-11-11)" data-search-js="search-39ee4160c7dc16c9.js" data-settings-js="settings-3a0b9947ba1bd99a.js" data-settings-css="settings-a66f7524084a489a.css" ></div></body></html>
