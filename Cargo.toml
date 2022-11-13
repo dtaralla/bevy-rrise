@@ -1,6 +1,6 @@
 [package]
 name = "bevy-rrise"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["David Taralla <davidtaralla@gmail.com> & Contributors to the Rrise project"]
 description = "A Wwise Bevy integration"
@@ -26,7 +26,7 @@ version = "0.1"
 features = ["attributes"]
 
 [dependencies.bevy_easings]
-version = "0.8"
+version = "0.9"
 optional = true
 
 [dependencies.rrise-headers]
@@ -34,17 +34,20 @@ version = "0.2"
 optional = true
 
 [dependencies.bevy]
-version = "0.8"
+version = "0.9"
 default-features = false
 features = ["bevy_asset"]
 
+[target.'cfg(windows)'.dependencies]
+raw-window-handle = "0.5.0"
+
 [target.'cfg(windows)'.dev-dependencies.bevy]
-version = "0.8"
+version = "0.9"
 default-features = false
 features = ["bevy_winit", "bevy_gltf"]
 
 [target.'cfg(target_os = "linux")'.dev-dependencies.bevy]
-version = "0.8"
+version = "0.9"
 default-features = false
 features = ["x11"]
 

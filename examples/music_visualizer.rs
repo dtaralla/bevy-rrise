@@ -2,36 +2,37 @@
  * Copyright (c) 2022 Contributors to the bevy-rrise project
  */
 
-use bevy::log::LogSettings;
+use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy_rrise::plugin::{CallbackChannel, RriseLabel, RrisePlugin};
 use bevy_rrise::sound_engine::PostEventAtLocation;
-use bevy_rrise::{rrise_setting, AkCallbackEvent};
+use bevy_rrise::AkCallbackEvent;
 use rrise::query_params::{get_rtpc_value, RtpcValueType};
-use rrise::settings::AkInitSettings;
+use rrise::settings;
 use rrise::sound_engine::load_bank_by_name;
 use rrise::{AkAuxBusID, AkCallbackInfo, AkCallbackType, AkResult, AkRtpcValue};
 use rrise_headers::rr;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
 
 #[cfg(windows)]
 use cc;
 
 fn main() {
     App::new()
-        .insert_resource(LogSettings {
+        .add_plugins(DefaultPlugins.set(LogPlugin {
             filter: "bevy_rrise=debug,wgpu=error".to_string(),
             ..default()
-        })
-        .add_plugins(DefaultPlugins)
-        .insert_resource(rrise_setting![AkInitSettings {
-            #[cfg(not(wwrelease))]
-            install_assert_hook: true,
-            ..default()
-        }
-        .with_plugin_dll_path(get_example_dll_path())])
-        .add_plugin(RrisePlugin)
+        }))
+        .add_plugin(
+            RrisePlugin::default().with_engine_settings(
+                settings::AkInitSettings {
+                    #[cfg(not(wwrelease))]
+                    install_assert_hook: true,
+                    ..default()
+                }
+                .with_plugin_dll_path(get_example_dll_path()),
+            ),
+        )
         .insert_resource(Meters {
             meters: [
                 (rr::xbus::Meters_00, 0.),
@@ -48,11 +49,11 @@ fn main() {
             ],
         })
         .add_startup_system(setup_scene)
-        .add_startup_system(start_music.chain(error_handler))
+        .add_startup_system(start_music.pipe(error_handler))
         .add_system_to_stage(
             CoreStage::PreUpdate,
             audio_metering
-                .chain(error_handler)
+                .pipe(error_handler)
                 .after(RriseLabel::RriseCallbackEventsPopulated),
         )
         .add_system(visualize_music)
@@ -73,6 +74,8 @@ struct BandMeter(usize);
 struct BeatBarText;
 
 type Meter = (AkAuxBusID, AkRtpcValue);
+
+#[derive(Resource)]
 struct Meters {
     meters: [Meter; 11],
 }
@@ -107,11 +110,11 @@ fn update_beat_bar_times(
             AkCallbackInfo::MusicSync {
                 music_sync_type: AkCallbackType::AK_MusicSyncBar,
                 ..
-            } => beat_bar_text.sections[1].value = format!("{:.1}s", time.seconds_since_startup()),
+            } => beat_bar_text.sections[1].value = format!("{:.1}s", time.elapsed_seconds_f64()),
             AkCallbackInfo::MusicSync {
                 music_sync_type: AkCallbackType::AK_MusicSyncBeat,
                 ..
-            } => beat_bar_text.sections[4].value = format!("{:.1}s", time.seconds_since_startup()),
+            } => beat_bar_text.sections[4].value = format!("{:.1}s", time.elapsed_seconds_f64()),
             _ => (),
         };
     }
@@ -139,13 +142,13 @@ fn setup_scene(
     asset_server: Res<AssetServer>,
 ) {
     // Setup cameras
-    commands.spawn_bundle(Camera3dBundle {
+    commands.spawn(Camera3dBundle {
         transform: Transform::from_xyz(0., 0., 15.).looking_at(Vec3::default(), Vec3::Y),
         ..default()
     });
 
     // Setup light
-    commands.spawn_bundle(DirectionalLightBundle {
+    commands.spawn(DirectionalLightBundle {
         directional_light: Default::default(),
         ..default()
     });
@@ -166,7 +169,7 @@ fn setup_scene(
     // Setup beat/bar displays
     let font = asset_server.load("fonts/FiraMono-Medium.ttf");
     commands
-        .spawn_bundle(TextBundle {
+        .spawn(TextBundle {
             style: Style {
                 align_self: AlignSelf::FlexEnd,
                 position_type: PositionType::Absolute,
@@ -233,8 +236,8 @@ fn spawn_meter(
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
 ) {
-    commands
-        .spawn_bundle(PbrBundle {
+    commands.spawn((
+        PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Box {
                 min_x: 0.0,
                 min_y: 0.0,
@@ -246,8 +249,9 @@ fn spawn_meter(
             material: materials.add(Color::hex(hex).unwrap().into()),
             transform: Transform::from_xyz(-5. + (index as f32), -5., 0.),
             ..default()
-        })
-        .insert(BandMeter(index));
+        },
+        BandMeter(index),
+    ));
 }
 
 fn get_example_dll_path() -> String {

@@ -282,7 +282,7 @@ impl RrListenerBundle {
 #[doc(hidden)]
 macro_rules! post_event_internal {
     ($event_id:ident on $entity:ident with $flags:expr; store in $safe_playing_ids:ident; react with $cb_info:ident then { $($then:stmt)* }) => {
-        PostEvent::new($entity.id() as AkGameObjectID, $event_id)
+        PostEvent::new($entity.index() as AkGameObjectID, $event_id)
             .flags($flags | AkCallbackType::AK_EndOfEvent)
             .post_with_callback(move |$cb_info| {
                 {
@@ -321,7 +321,7 @@ impl RrEmitter {
     /// Stops all events currently playing on this emitter.
     pub fn stop(&self) {
         if let Some(entity) = self.entity {
-            stop_all(Some(entity.id() as u64));
+            stop_all(Some(entity.index() as u64));
         }
     }
 
@@ -415,14 +415,14 @@ pub(crate) fn init_new_rr_objects(
     // this emitter would have no listener and fail to post on the Wwise side.
     for (e, name, mut rr_l, &tfm) in listeners.iter_mut() {
         rr_l.entity = Some(e);
-        let id = e.id() as AkGameObjectID;
+        let id = e.index() as AkGameObjectID;
 
         #[cfg(not(wwrelease))]
         {
             if let Err(akr) = register_named_game_obj(
                 id,
                 name.map(|n| n.as_str())
-                    .unwrap_or(format!("RrListener_{}", e.id()).as_str()),
+                    .unwrap_or(format!("RrListener_{}", e.index()).as_str()),
             ) {
                 error!("Couldn't register listener {} - {}", id, akr);
                 continue;
@@ -454,14 +454,14 @@ pub(crate) fn init_new_rr_objects(
 
     for (e, name, mut rr_e, &tfm) in emitters.iter_mut() {
         rr_e.entity = Some(e);
-        let id = e.id() as AkGameObjectID;
+        let id = e.index() as AkGameObjectID;
 
         #[cfg(not(wwrelease))]
         {
             if let Err(akr) = register_named_game_obj(
                 id,
                 name.map(|n| n.as_str())
-                    .unwrap_or(format!("RrEmitter_{}", e.id()).as_str()),
+                    .unwrap_or(format!("RrEmitter_{}", e.index()).as_str()),
             ) {
                 error!("Couldn't register emitter {} - {}", id, akr);
                 continue;
@@ -496,8 +496,8 @@ pub(crate) fn stop_destroyed_emitters(
     destroyed_emitters: RemovedComponents<RrEmitter>,
 ) -> Result<(), AkResult> {
     for e in destroyed_emitters.iter() {
-        stop_all(Some(e.id() as AkGameObjectID));
-        debug!("Stopped emitter {} because it got despawned", e.id());
+        stop_all(Some(e.index() as AkGameObjectID));
+        debug!("Stopped emitter {} because it got despawned", e.index());
     }
 
     Ok(())
@@ -513,7 +513,7 @@ pub(crate) fn despawn_silent_emitters(
             commands.entity(rr.entity.unwrap()).despawn();
             debug!(
                 "Despawned emitter {} because it became silent",
-                rr.entity.unwrap().id()
+                rr.entity.unwrap().index()
             );
         }
     }
@@ -534,13 +534,13 @@ pub(crate) fn update_rr_position(
 ) -> Result<(), AkResult> {
     for (rr, &tfm) in emitters.iter_mut() {
         set_position(
-            rr.entity.unwrap().id() as AkGameObjectID,
+            rr.entity.unwrap().index() as AkGameObjectID,
             tfm.to_ak_transform(),
         )?;
     }
     for (rr, &tfm) in listeners.iter_mut() {
         set_position(
-            rr.entity.unwrap().id() as AkGameObjectID,
+            rr.entity.unwrap().index() as AkGameObjectID,
             tfm.to_ak_transform(),
         )?;
     }

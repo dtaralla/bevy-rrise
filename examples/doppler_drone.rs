@@ -2,18 +2,15 @@
  * Copyright (c) 2022 Contributors to the bevy-rrise project
  */
 
-use bevy::log::LogSettings;
+use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy_easings::{Ease, EaseMethod, EasingComponent, EasingType, EasingsPlugin};
 use bevy_rrise::emitter_listener::{RrDynamicEmitterBundle, RrListener};
 use bevy_rrise::plugin::RrisePlugin;
-use bevy_rrise::rrise_setting;
 use rrise::game_syncs::SetRtpcValue;
-use rrise::settings::AkInitSettings;
 use rrise::sound_engine::load_bank_by_name;
-use rrise::{AkGameObjectID, AkResult};
+use rrise::{settings, AkGameObjectID, AkResult};
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
 
 #[cfg(windows)]
 use cc;
@@ -26,28 +23,24 @@ const TRAJECTORY_SPEED: f32 = 15_f32; // expected to be positive
 
 fn main() {
     App::new()
-        .insert_resource(LogSettings {
+        .add_plugins(DefaultPlugins.set(LogPlugin {
             filter: "bevy_rrise=debug,wgpu=error".to_string(),
             ..default()
-        })
-        .insert_resource(rrise_setting![AkInitSettings {
-            #[cfg(not(wwrelease))]
-            install_assert_hook: true,
-            ..default()
-        }
-        .with_plugin_dll_path(get_example_dll_path())])
-        .add_plugins(DefaultPlugins)
+        }))
         .add_plugin(EasingsPlugin)
-        .add_plugin(RrisePlugin)
+        .add_plugin(
+            RrisePlugin::default().with_engine_settings(
+                settings::AkInitSettings {
+                    #[cfg(not(wwrelease))]
+                    install_assert_hook: true,
+                    ..default()
+                }
+                .with_plugin_dll_path(get_example_dll_path()),
+            ),
+        )
         .add_startup_system(setup_scene)
-        .add_system(update.chain(error_handler))
+        .add_system(update.pipe(system_adapter::unwrap))
         .run();
-}
-
-fn error_handler(In(result): In<Result<(), AkResult>>) {
-    if let Err(akr) = result {
-        panic!("Unexpected error in system: {}", akr);
-    }
 }
 
 /// Updates the Doppler effect RTPC of the drone & make the camera look at the drone
@@ -75,7 +68,7 @@ fn update(
     rtpc.with_value(doppler_factor);
 
     for c in children.iter() {
-        rtpc.for_target(c.id() as AkGameObjectID).set()?;
+        rtpc.for_target(c.index() as AkGameObjectID).set()?;
     }
 
     // Make camera look at emitter
@@ -94,20 +87,20 @@ fn setup_scene(
 ) {
     // Setup cameras
     commands
-        .spawn_bundle(Camera3dBundle {
+        .spawn(Camera3dBundle {
             transform: Transform::from_xyz(0., 0., 15.).looking_at(Vec3::default(), Vec3::Y),
             ..default()
         })
         .add_child(default_listener.iter().next().unwrap());
 
     // Setup light
-    commands.spawn_bundle(DirectionalLightBundle {
+    commands.spawn(DirectionalLightBundle {
         directional_light: Default::default(),
         ..default()
     });
 
     // Setup path mesh
-    commands.spawn_bundle(PbrBundle {
+    commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Box {
             min_x: -TRAJECTORY_LENGTH / 2.,
             max_x: TRAJECTORY_LENGTH / 2.,
@@ -126,19 +119,13 @@ fn setup_scene(
 
     // Setup mesh audio emitter
     commands
-        .spawn_bundle(PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Icosphere::default())),
-            material: materials.add(Color::RED.into()),
-            transform: Transform::from_xyz(-TRAJECTORY_LENGTH / 2., 0., -2.),
-            ..default()
-        })
-        .with_children(|parent| {
-            // Attach dynamic emitter in the center of the parent
-            parent.spawn_bundle(
-                RrDynamicEmitterBundle::new(Vec3::default()).with_event("PlayDoppler", true),
-            );
-        })
-        .insert(
+        .spawn((
+            PbrBundle {
+                mesh: meshes.add(Mesh::from(shape::Icosphere::default())),
+                material: materials.add(Color::RED.into()),
+                transform: Transform::from_xyz(-TRAJECTORY_LENGTH / 2., 0., -2.),
+                ..default()
+            },
             Transform::from_xyz(-TRAJECTORY_LENGTH / 2., 0., -2.).ease_to(
                 Transform::from_xyz(TRAJECTORY_LENGTH / 2., 0., -2.),
                 EaseMethod::Linear,
@@ -149,7 +136,13 @@ fn setup_scene(
                     pause: None,
                 },
             ),
-        );
+        ))
+        .with_children(|parent| {
+            // Attach dynamic emitter in the center of the parent
+            parent.spawn(
+                RrDynamicEmitterBundle::new(Vec3::default()).with_event("PlayDoppler", true),
+            );
+        });
 }
 
 fn get_example_dll_path() -> String {

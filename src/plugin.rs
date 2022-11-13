@@ -8,37 +8,40 @@ use crate::emitter_listener::{
 };
 use crate::AkCallbackEvent;
 use bevy::app::AppExit;
-use bevy::asset::{AssetServerSettings, FileAssetIo};
+use bevy::asset::FileAssetIo;
 use bevy::prelude::*;
 use crossbeam_channel::{Receiver, Sender};
 use rrise::settings::*;
 use rrise::*;
+use std::cell::RefCell;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 
-#[macro_export]
-/// Shorthand for creating `Rrise*Settings` [`Res<T>`] types.
-macro_rules! rrise_setting {
-    ($setting:expr) => {
-        Arc::new(RwLock::new($setting))
-    };
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
+pub enum RriseLabel {
+    /// After this in [StartupStage::PreStartup], it is safe to call bevy-rrise APIs and Rrise raw
+    /// APIs until Bevy's [AppExit] event is emitted.
+    SoundEngineInitialized,
+
+    /// After this in [StartupStage::PreStartup], you can consider the Init.bnk loaded and a possible
+    /// default [RrListenerBundle] spawned until Bevy's [AppExit] event is emitted.
+    ///
+    /// *See also* [RrisePluginSettings::spawn_default_listener]
+    RriseReady,
+
+    /// After this in [CoreStage::PreUpdate], the EventReader<AkCallbackEvent> systems that run this
+    /// frame will be populated with Rrise callbacks that occurred since the last execution of this label.
+    RriseCallbackEventsPopulated,
+
+    /// This marks the moment in the frame's [CoreStage::PostUpdate] where the sound engine gets
+    /// terminated if an [AppExit] event occurred. It is not safe to call bevy-rrise APIs and Rrise
+    /// raw APIs from now on.
+    RriseMightBeTerminated,
 }
 
-pub type RriseMemSettings = Arc<RwLock<AkMemSettings>>;
-pub type RriseStreamMgrSettings = Arc<RwLock<AkStreamMgrSettings>>;
-pub type RriseDeviceSettings = Arc<RwLock<AkDeviceSettings>>;
-pub type RriseSoundEngineSettings = Arc<RwLock<AkInitSettings>>;
-pub type RriseSoundEnginePlatformSettings = Arc<RwLock<AkPlatformInitSettings>>;
-pub type RriseMusicSettings = Arc<RwLock<AkMusicSettings>>;
-#[cfg(not(wwrelease))]
-pub type RriseCommSettings = Arc<RwLock<AkCommSettings>>;
-
-#[derive(Default)]
-pub struct RrisePlugin;
-
 #[derive(Debug, Clone)]
-/// Plugin settings
-pub struct RrisePluginSettings {
+/// Plugin basic settings
+pub struct RriseBasicSettings {
     /// One of the languages supported by your Wwise project in Project > Languages.
     ///
     /// Defaults to English(US).
@@ -75,7 +78,7 @@ pub struct RrisePluginSettings {
     pub spawn_default_listener: bool,
 }
 
-impl Default for RrisePluginSettings {
+impl Default for RriseBasicSettings {
     /// Sets `default_language` to `English(US)` and `banks_location` to `soundbanks`, expecting
     /// soundbanks files to be in `[cargo dir OR exe directory]/assets/soundbanks/[Platform]`.
     fn default() -> Self {
@@ -87,71 +90,150 @@ impl Default for RrisePluginSettings {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, SystemLabel)]
-pub enum RriseLabel {
-    /// After this in [StartupStage::PreStartup], it is safe to call bevy-rrise APIs and Rrise raw
-    /// APIs until Bevy's [AppExit] event is emitted.
-    SoundEngineInitialized,
+struct PluginSettingsInternal {
+    bevy_asset_folder: String,
+    plugin: RriseBasicSettings,
+    mem: AkMemSettings,
+    stream: RefCell<AkStreamMgrSettings>,
+    dev: RefCell<AkDeviceSettings>,
+    engine: RefCell<AkInitSettings>,
+    pltfm: RefCell<AkPlatformInitSettings>,
+    music: AkMusicSettings,
+    #[cfg(not(wwrelease))]
+    comms: AkCommSettings,
+}
 
-    /// After this in [StartupStage::PreStartup], you can consider the Init.bnk loaded and a possible
-    /// default [RrListenerBundle] spawned until Bevy's [AppExit] event is emitted.
-    ///
-    /// *See also* [RrisePluginSettings::spawn_default_listener]
-    RriseReady,
+impl Default for PluginSettingsInternal {
+    fn default() -> Self {
+        Self {
+            bevy_asset_folder: default(),
+            plugin: default(),
+            mem: default(),
+            stream: default(),
+            dev: default(),
+            engine: RefCell::new(AkInitSettings {
+                install_assert_hook: true,
+                ..default()
+            }),
+            pltfm: default(),
+            music: default(),
+            #[cfg(not(wwrelease))]
+            comms: default(),
+        }
+    }
+}
 
-    /// After this in [CoreStage::PreUpdate], the EventReader<AkCallbackEvent> systems that run this
-    /// frame will be populated with Rrise callbacks that occurred since the last execution of this label.
-    RriseCallbackEventsPopulated,
+// SAFETY
+// PluginSettingsInternal is not meant to be accessed by any systems other than init_sound_engine().
+// Plus, it's an init system, so there is no way this structure is going to be accessed from
+// more than 1 thread at a time.
+unsafe impl Sync for PluginSettingsInternal {}
 
-    /// This marks the moment in the frame's [CoreStage::PostUpdate] where the sound engine gets
-    /// terminated if an [AppExit] event occurred. It is not safe to call bevy-rrise APIs and Rrise
-    /// raw APIs from now on.
-    RriseMightBeTerminated,
+#[derive(Deref, Resource)]
+struct PluginSettingsResource(Arc<RwLock<PluginSettingsInternal>>);
+
+pub struct RrisePlugin(Arc<RwLock<PluginSettingsInternal>>);
+
+impl Default for RrisePlugin {
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(PluginSettingsInternal::default())))
+    }
+}
+
+impl RrisePlugin {
+    pub fn new() -> Self {
+        default()
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_plugin_settings(mut self, settings: RriseBasicSettings) -> Self {
+        self.0.write().unwrap().plugin = settings;
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_mem_settings(mut self, settings: AkMemSettings) -> Self {
+        self.0.write().unwrap().mem = settings;
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_music_settings(mut self, settings: AkMusicSettings) -> Self {
+        self.0.write().unwrap().music = settings;
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_engine_settings(mut self, settings: AkInitSettings) -> Self {
+        self.0.write().unwrap().engine = RefCell::new(settings);
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_stream_settings(mut self, settings: AkStreamMgrSettings) -> Self {
+        self.0.write().unwrap().stream = RefCell::new(settings);
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_dev_settings(mut self, settings: AkDeviceSettings) -> Self {
+        self.0.write().unwrap().dev = RefCell::new(settings);
+        self
+    }
+
+    #[allow(unused_mut)]
+    pub fn with_platform_settings(mut self, settings: AkPlatformInitSettings) -> Self {
+        self.0.write().unwrap().pltfm = RefCell::new(settings);
+        self
+    }
+
+    #[cfg(not(wwrelease))]
+    #[allow(unused_mut)]
+    pub fn with_comms_settings(mut self, settings: AkCommSettings) -> Self {
+        self.0.write().unwrap().comms = settings;
+        self
+    }
 }
 
 impl Plugin for RrisePlugin {
     fn build(&self, app: &mut App) {
-        app.world
-            .get_resource_or_insert_with(RriseMemSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseStreamMgrSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseDeviceSettings::default);
-        app.world.get_resource_or_insert_with(|| {
-            rrise_setting![AkInitSettings {
-                install_assert_hook: true,
-                ..default()
-            }]
-        });
-        app.world
-            .get_resource_or_insert_with(RriseSoundEnginePlatformSettings::default);
-        app.world
-            .get_resource_or_insert_with(RriseMusicSettings::default);
-        app.world
-            .get_resource_or_insert_with(RrisePluginSettings::default);
-        #[cfg(not(wwrelease))]
-        app.world
-            .get_resource_or_insert_with(RriseCommSettings::default);
+        let plugin_settings = PluginSettingsResource(self.0.clone());
+
+        if plugin_settings
+            .read()
+            .unwrap()
+            .plugin
+            .banks_location
+            .is_relative()
+        {
+            let asset_folder = &app
+                .get_added_plugins::<AssetPlugin>()
+                .first()
+                .expect("AssetPlugin must be inserted before Rrise if banks_location setting is a relative path")
+                .asset_folder;
+            plugin_settings.write().unwrap().bevy_asset_folder = asset_folder.clone();
+        }
 
         app.add_event::<AkCallbackEvent>()
+            .insert_resource(plugin_settings)
             .insert_resource(CallbackChannel::new())
             .add_startup_system_to_stage(
                 StartupStage::PreStartup,
                 init_sound_engine
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label(RriseLabel::SoundEngineInitialized),
             )
             .add_startup_system_to_stage(
                 StartupStage::PreStartup,
                 setup_audio
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .after(RriseLabel::SoundEngineInitialized)
                     .label(RriseLabel::RriseReady),
             )
             .add_system_to_stage(
                 CoreStage::PreUpdate,
                 init_new_rr_objects
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .before(RriseLabel::RriseCallbackEventsPopulated),
             )
             .add_system_to_stage(
@@ -161,31 +243,31 @@ impl Plugin for RrisePlugin {
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 stop_destroyed_emitters
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .before("Rrise_despawn_silent_emitters"), // No need to stop silent emitters despawned this frame
             )
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 despawn_silent_emitters
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label("Rrise_despawn_silent_emitters"),
             )
             .add_system_to_stage(
                 CoreStage::PostUpdate,
                 update_rr_position
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .after("Rrise_despawn_silent_emitters"), // No need to stop silent emitters despawned this frame,
             )
             .add_system_to_stage(
                 CoreStage::Last,
                 audio_rendering
-                    .chain(error_handler)
+                    .pipe(error_handler)
                     .label(RriseLabel::RriseMightBeTerminated),
             );
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Resource)]
 /// Resource to query in systems where you want to post callback-enabled events.
 ///
 /// *See also* [RrEmitter::post_associated_event()](crate::emitter_listener::RrEmitter::post_associated_event())
@@ -245,19 +327,13 @@ fn setup_audio(mut commands: Commands) -> Result<(), AkResult> {
 #[allow(clippy::too_many_arguments)]
 #[tracing::instrument(level = "debug", skip_all)]
 fn init_sound_engine(
-    mem_settings: Res<Arc<RwLock<AkMemSettings>>>,
-    stream_settings: Res<Arc<RwLock<AkStreamMgrSettings>>>,
-    device_settings: Res<Arc<RwLock<AkDeviceSettings>>>,
-    sound_engine_settings: Res<Arc<RwLock<AkInitSettings>>>,
-    sound_engine_platform_settings: Res<Arc<RwLock<AkPlatformInitSettings>>>,
-    music_settings: Res<Arc<RwLock<AkMusicSettings>>>,
-    #[cfg(not(wwrelease))] comms_settings: Res<Arc<RwLock<AkCommSettings>>>,
-    plugin_settings: Res<RrisePluginSettings>,
-    asset_server_settings: Res<AssetServerSettings>,
+    plugin_settings: ResMut<PluginSettingsResource>,
     windows: Res<Windows>,
 ) -> Result<(), AkResult> {
+    let mut settings = plugin_settings.write().unwrap();
+
     // init memorymgr
-    memory_mgr::init(&mut mem_settings.write().unwrap())?;
+    memory_mgr::init(&mut settings.mem)?;
     assert!(memory_mgr::is_initialized());
     debug!("Memory manager initialized");
 
@@ -266,56 +342,56 @@ fn init_sound_engine(
     let platform = "Windows";
     #[cfg(target_os = "linux")]
     let platform = "Linux";
-    let mut gen_banks_folder = plugin_settings.banks_location.join(platform);
+    let mut gen_banks_folder = settings.plugin.banks_location.join(platform);
     if gen_banks_folder.is_relative() {
         gen_banks_folder = FileAssetIo::get_base_path()
-            .join(&asset_server_settings.asset_folder)
+            .join(&settings.bevy_asset_folder)
             .join(gen_banks_folder);
     }
+
     stream_mgr::init_default_stream_mgr(
-        &stream_settings.read().unwrap(),
-        &mut device_settings.write().unwrap(),
+        &settings.stream.borrow(),
+        &mut settings.dev.borrow_mut(),
         gen_banks_folder.as_os_str().to_str().unwrap(),
     )?;
     debug!("Default streaming manager initialized");
 
-    stream_mgr::set_current_language(&plugin_settings.init_language)?;
+    stream_mgr::set_current_language(&settings.plugin.init_language)?;
     debug!("Current language set");
 
     // init soundengine
-    {
-        #[cfg(windows)]
-        // Find the Bevy window and register it as owner of the sound engine
-        if let Some(w) = windows.iter().next() {
-            use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 
-            sound_engine_platform_settings.write().unwrap().h_wnd.store(
-                match unsafe { w.raw_window_handle().get_handle().raw_window_handle() } {
-                    #[cfg(windows)]
-                    RawWindowHandle::Win32(h) => h.hwnd,
-                    other => {
-                        panic!("Unexpected window handle: {:?}", other)
-                    }
-                },
-                std::sync::atomic::Ordering::SeqCst,
-            );
-        }
+    #[cfg(windows)]
+    // Find the Bevy window and register it as owner of the sound engine
+    if let Some(w) = windows.iter().next() {
+        use raw_window_handle::RawWindowHandle;
 
-        sound_engine::init(
-            &mut sound_engine_settings.write().unwrap(),
-            &mut sound_engine_platform_settings.write().unwrap(),
-        )?;
+        settings.pltfm.get_mut().h_wnd.store(
+            match w.raw_handle().unwrap().window_handle {
+                #[cfg(windows)]
+                RawWindowHandle::Win32(h) => h.hwnd,
+                other => {
+                    panic!("Unexpected window handle: {:?}", other)
+                }
+            },
+            std::sync::atomic::Ordering::SeqCst,
+        );
     }
+
+    sound_engine::init(
+        &mut settings.engine.borrow_mut(),
+        &mut settings.pltfm.borrow_mut(),
+    )?;
     debug!("Internal sound engine initialized");
 
     // init musicengine
-    music_engine::init(&mut music_settings.write().unwrap())?;
+    music_engine::init(&mut settings.music)?;
     debug!("Internal music engine initialized");
 
     // init comms
     #[cfg(not(wwrelease))]
     {
-        communication::init(&comms_settings.read().unwrap())?;
+        communication::init(&settings.comms)?;
         debug!("Profiling (comms) initialized");
     }
 
