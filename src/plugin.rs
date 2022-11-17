@@ -354,6 +354,8 @@ fn init_sound_engine(
             .join(gen_banks_folder);
     }
 
+    debug!("Banks will be discovered from: {:?}", gen_banks_folder);
+
     stream_mgr::init_default_stream_mgr(
         &settings.stream.borrow(),
         &mut settings.dev.borrow_mut(),
