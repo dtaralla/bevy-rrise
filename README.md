@@ -83,7 +83,11 @@ resulting assets where bevy-rrise can find them. Again, look at how the provided
 started 😉
 
 Don't hesitate to enable logging at the debug level for bevy-rrise to get an idea of what's happening under the hood!
-It can also help diagnose why your sounds might not be working.
+It can also help diagnose why your sounds might not be working. For instance, bevy-rrise will output where it 
+expects your bank files to be.
+
+If you encounter an error about the `Init.bnk` that couldn't be loaded, enable debug-level logging and check you 
+placed your .bnk files in the folder where bevy-rrise expect them to be based on your configuration.
 
 ### Plugin Configuration
 Starting in v0.2.1 (and Bevy 0.9), configuration is more ergonomic than ever!
